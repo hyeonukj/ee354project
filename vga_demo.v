@@ -46,21 +46,22 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	///////////////		VGA control starts here		/////////////////
 	/////////////////////////////////////////////////////////////////
 	reg [9:0] position;
-	
+	reg [9:0] position2;
 	always @(posedge DIV_CLK[21])
 		begin
 			if(reset)
 				position<=240;
+				position2<=350;
 			else if(btnD || btnD)
 				position<=200;
 			else
 				position<=position+1;
 		end
 
-	wire R = CounterX>=(position-10) && CounterX<=(position+10) && CounterY[8:5]==7 || (CounterY>=400 && CounterY <=450);
-	wire G = CounterY>=(position-50) && CounterY<=position && CounterX[5:3]==7;
+	wire R = CounterY>=(position-10) && CounterY<=(position+10) && CounterX[8:5]==7 || (CounterY>=400 && CounterY <=430) ||(CounterY>=(position2-10) && CounterY<=(position2+10) && CounterX[8:5]==7 );
+	wire G = CounterY>=(position-50) && CounterY<=position && CounterX[5:3]==7|| (CounterY>=400 && CounterY <=430);
 	//wire G = CounterX>100 && CounterX<200 && CounterY[5:3]==7;
-	wire B = CounterX>=position && CounterX<=(position+100) && CounterY[3:0]==7;
+	wire B = CounterX>=position && CounterX<=(position+100) && CounterY[3:0]==7|| (CounterY>=400 && CounterY <=430);
 	//wire B = CounterX>320 && CounterX<640 && CounterY[5:3]==position;
 	
 	always @(posedge clk)

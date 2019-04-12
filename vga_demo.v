@@ -51,11 +51,10 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 		begin
 			if(reset)
 				position<=240;
-			else if(btnD && ~btnU)
-				position<=240;
-			else if(btnU && ~btnD)
-				position<=240;
-			position<=position+1;
+			else if(btnD || btnD)
+				position<=200;
+			else
+				position<=position+1;
 		end
 
 	wire R = CounterX>=(position-10) && CounterX<=(position+10) && CounterY[8:5]==7 || (CounterY>=400 && CounterY <=450);

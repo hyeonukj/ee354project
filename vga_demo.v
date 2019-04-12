@@ -62,7 +62,7 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 			position<=position+1;
 		end
 	
-	intial begin
+	initial begin
 	notes[0] = 3'b000;
 	notes[1] = 3'b001;
 	notes[2] = 3'b010;

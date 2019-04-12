@@ -53,19 +53,25 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 			if(reset)
 				position<=240;
 			
-			if(btnD)
-				position<=300;
-			
-			position2<=position2+1;
+			if(btnD && ~btnU)
+				position<=300;	
+				
 			position<=position+1;
 		end
-
-	wire R = CounterY>=(position-100) && CounterY<=(position+100) && CounterX[8:5]==7;
+	
+	
+	wire R = CounterX>=(0) && CounterX<=(199) && CounterY<=(position+10)&&CounterY>=(position-10);
+	wire G = CounterX>=(220) && CounterX<=(419) && CounterY<=(position+10)&&CounterY>=(position-10);
+	//wire G = CounterX>100 && CounterX<200 && CounterY[5:3]==7;
+	wire B = CounterX>=(440) && CounterX<=(639) && CounterY<=(position+10)&&CounterY>=(position-10);
+	//wire B = CounterX>320 && CounterX<640 && CounterY[5:3]==position;
+	
+	/* wire R = CounterY>=(position-100) && CounterY<=(position+100) && CounterX[6:4]==7;
 	wire G = CounterY>=(position-100) && CounterY<=(position+100) && CounterX[5:3]==7;
 	//wire G = CounterX>100 && CounterX<200 && CounterY[5:3]==7;
 	wire B = CounterY>=(position-100) && CounterY<=(position+100) && CounterX[3:0]==7;
-	//wire B = CounterX>320 && CounterX<640 && CounterY[5:3]==position;
-	
+	//wire B = CounterX>320 && CounterX<640 && CounterY[5:3]==position; */
+	initial begin
 	notes[0] = 3'b000;
 	notes[1] = 3'b001;
 	notes[2] = 3'b010;
@@ -74,7 +80,7 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	notes[5] = 3'b010;
 	notes[6] = 3'b100;
 	notes[7] = 3'b111;
-	
+	end
 	always @(posedge clk)
 	begin
 		vga_r <= R & inDisplayArea;

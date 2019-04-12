@@ -34,6 +34,7 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 
 	assign	button_clk = DIV_CLK[18];
 	assign	clk = DIV_CLK[1];
+	assign  note_clk = DIV_CLK[25];
 	assign 	{St_ce_bar, St_rp_bar, Mt_ce_bar, Mt_St_oe_bar, Mt_St_we_bar} = {5'b11111};
 	
 	wire inDisplayArea;
@@ -47,6 +48,8 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	/////////////////////////////////////////////////////////////////
 	reg [9:0] position;
 	reg [3:0] notes [0:7];
+	reg [3:0] counter;
+	wire R, G, B;
  
 	always @(posedge DIV_CLK[21])
 		begin
@@ -59,19 +62,7 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 			position<=position+1;
 		end
 	
-	
-	wire R = CounterX>=(0) && CounterX<=(199) && CounterY<=(position+10)&&CounterY>=(position-10);
-	wire G = CounterX>=(220) && CounterX<=(419) && CounterY<=(position+10)&&CounterY>=(position-10);
-	//wire G = CounterX>100 && CounterX<200 && CounterY[5:3]==7;
-	wire B = CounterX>=(440) && CounterX<=(639) && CounterY<=(position+10)&&CounterY>=(position-10);
-	//wire B = CounterX>320 && CounterX<640 && CounterY[5:3]==position;
-	
-	/* wire R = CounterY>=(position-100) && CounterY<=(position+100) && CounterX[6:4]==7;
-	wire G = CounterY>=(position-100) && CounterY<=(position+100) && CounterX[5:3]==7;
-	//wire G = CounterX>100 && CounterX<200 && CounterY[5:3]==7;
-	wire B = CounterY>=(position-100) && CounterY<=(position+100) && CounterX[3:0]==7;
-	//wire B = CounterX>320 && CounterX<640 && CounterY[5:3]==position; */
-	initial begin
+	intial begin
 	notes[0] = 3'b000;
 	notes[1] = 3'b001;
 	notes[2] = 3'b010;
@@ -81,6 +72,31 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	notes[6] = 3'b100;
 	notes[7] = 3'b111;
 	end
+	
+	always @(posedge note_clk) 
+	begin
+		if (reset)
+			counter <= 0;
+		else
+			counter <= counter + 1;
+	end
+	
+	wire Red = CounterX>=(0) && CounterX<=(199) && CounterY<=(position+10) && CounterY>=(position-10);
+	//wire R2 = CounterX>=(0) && CounterX<=(199) && CounterY<=(position-160) && CounterY>=(position-180);
+	//wire R3 = CounterX>=(0) && CounterX<=(199) && CounterY<=(position-260) && CounterY>=(position-280);
+	
+	wire Green = CounterX>=(220) && CounterX<=(419) && CounterY<=(position+10) && CounterY>=(position-10);
+	//wire G2 = CounterX>=(220) && CounterX<=(419) && CounterY<=(position-160) && CounterY>=(position-180);
+	//wire G3 = CounterX>=(220) && CounterX<=(419) && CounterY<=(position-260) && CounterY>=(position-280);
+	
+	wire Blue = CounterX>=(440) && CounterX<=(639) && CounterY<=(position+10) && CounterY>=(position-10);
+	//wire B2 = CounterX>=(440) && CounterX<=(639) && CounterY<=(position-160) && CounterY>=(position-180);
+	//wire B3 = CounterX>=(440) && CounterX<=(639) && CounterY<=(position-260) && CounterY>=(position-280);
+	
+	assign R = notes[counter][2] ? Red : 0;
+	assign G = notes[counter][1] ? Green : 0;
+	assign B = notes[counter][0] ? Blue : 0;
+	
 	always @(posedge clk)
 	begin
 		vga_r <= R & inDisplayArea;

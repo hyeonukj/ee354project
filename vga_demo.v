@@ -46,10 +46,10 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	/////////////////////////////////////////////////////////////////
 	///////////////		VGA control starts here		/////////////////
 	/////////////////////////////////////////////////////////////////
-	reg [9:0] position;
-	reg [9:0] position2;
+	reg [9:0] position [0:8];
 	reg [3:0] notes [0:7];
 	reg [3:0] counter;
+	reg flag1;
 	wire R, G, B;
  
 	always @(posedge DIV_CLK[21])
@@ -66,8 +66,9 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 				end
 			else
 				begin
-				position<=position+1;
-				position2<=position2+1;
+				position[0]<=position[0]+1;
+				if(flag1==1)
+					position[1]<=position[1]+1;
 				end
 		end
 	
@@ -88,9 +89,11 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 			counter <= 0;
 		else
 			counter <= counter + 1;
+		if(notes[counter][2]==1)
+			flag1=1;
 	end
 	
-	wire Red = CounterX>=(0) && CounterX<=(199) && CounterY<=(position+10) && CounterY>=(position-10)||(CounterX>=(0) && CounterX<=(199) &&CounterY<=(position2+10) && CounterY>=(position2-10));
+	wire Red = CounterX>=(0) && CounterX<=(199) && ((CounterY<=(position[0]+20) && CounterY>=(position[0]-20))||(CounterY<=(position[1]+20) && CounterY>=(position[1]-20))||(CounterY<=(position[1]+20) && CounterY>=(position[1]-20)));
 	//wire R2 = CounterX>=(0) && CounterX<=(199) && CounterY<=(position-160) && CounterY>=(position-180);
 	//wire R3 = CounterX>=(0) && CounterX<=(199) && CounterY<=(position-260) && CounterY>=(position-280);
 	
@@ -108,9 +111,9 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	
 	always @(posedge clk)
 	begin
-		vga_r <= R & inDisplayArea;
-		vga_g <= G & inDisplayArea;
-		vga_b <= B & inDisplayArea;
+		vga_r <= Red & inDisplayArea;
+		vga_g <= Green & inDisplayArea;
+		vga_b <= Blue & inDisplayArea;
 	end
 	
 	/////////////////////////////////////////////////////////////////

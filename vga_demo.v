@@ -55,12 +55,19 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	always @(posedge DIV_CLK[21])
 		begin
 			if(reset)
-				position<=240;
+			begin
+				position<=300;
+				position2<=150;
+			end
 			
 			if(btnD && ~btnU)
-				position<=300;	
-				
+			begin
+				position<=300;
+				position2<=150;
+			end
+			
 			position<=position+1;
+			position2<=position2+1;
 		end
 	
 	initial begin
@@ -80,11 +87,6 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 			counter <= 0;
 		else
 			counter <= counter + 1;
-		if(notes[counter][2])
-		begin
-			position2<=100;
-		end
-		
 	end
 	
 	wire Red = CounterX>=(0) && CounterX<=(199) && CounterY<=(position+10) && CounterY>=(position-10)||(CounterY<=(position2+10) && CounterY>=(position2-10));

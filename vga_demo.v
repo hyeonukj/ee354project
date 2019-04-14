@@ -49,7 +49,7 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	reg [9:0] position [0:8];
 	reg [3:0] notes [0:7];
 	reg [3:0] counter;
-	reg flag1;
+	reg flag[0:8];
 	wire R, G, B;
  
 	always @(posedge DIV_CLK[21])
@@ -93,15 +93,19 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 			flag1=1;
 	end
 	
-	wire Red = CounterX>=(0) && CounterX<=(199) && ((CounterY<=(position[0]+20) && CounterY>=(position[0]-20))||(CounterY<=(position[1]+20) && CounterY>=(position[1]-20))||(CounterY<=(position[1]+20) && CounterY>=(position[1]-20)));
+	wire R2 = CounterX>=0 && CounterX<=199 && CounterY<=(position[2]+20) && CounterY>=(position[2]-20);
+	wire R1 = CounterX>=0 && CounterX<=199 && CounterY<=(position[1]+20) && CounterY>=(position[1]-20);
+	wire Red = (CounterX>=0 && CounterX<=199 && CounterY<=(position[0]+20) && CounterY>=(position[0]-20)) || R1 || R2;
 	//wire R2 = CounterX>=(0) && CounterX<=(199) && CounterY<=(position-160) && CounterY>=(position-180);
 	//wire R3 = CounterX>=(0) && CounterX<=(199) && CounterY<=(position-260) && CounterY>=(position-280);
 	
-	wire Green = CounterX>=(220) && CounterX<=(419) && CounterY<=(position[0]+10) && CounterY>=(position[0]-10);
+	wire G4b CounterX>=220 && CounterX<=419 && CounterY<=(position[5]+20) && CounterY>=(position[5]-20);
+	wire G5 =unterX>=220 && CounterX<=419 && CounterY<=(position[4]+20) && CounterY>=(position[4]-20);
+	wire Green = (CounterX>=220 && CounterX<=419 && CounterY<=(position[3]+10) && CounterY>=(position[3]-10)) || G4| G5;
 	//wire G2 = CounterX>=(220) && CounterX<=(419) && CounterY<=(position-160) && CounterY>=(position-180);
 	//wire G3 = CounterX>=(220) && CounterX<=(419) && CounterY<=(position-260) && CounterY>=(position-280);
 	
-	wire Blue = CounterX>=(440) && CounterX<=(639) && CounterY<=(position[0]+10) && CounterY>=(position[0]-10);
+	wire Blue = CounterX>=440 && CounterX<=639 && CounterY<=(position[0]+10) && CounterY>=(position[0]-10);
 	//wire B2 = CounterX>=(440) && CounterX<=(639) && CounterY<=(position-160) && CounterY>=(position-180);
 	//wire B3 = CounterX>=(440) && CounterX<=(639) && CounterY<=(position-260) && CounterY>=(position-280);
 	

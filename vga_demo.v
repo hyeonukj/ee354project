@@ -55,19 +55,20 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	always @(posedge DIV_CLK[21])
 		begin
 			if(reset)
-			begin
+				begin
 				position<=300;
 				position2<=150;
-			end
-			
-			if(btnD && ~btnU)
-			begin
-				position<=300;
-				position2<=150;
-			end
-			
-			position<=position+1;
-			position2<=position2+1;
+				end
+			else if(btnD || btnU)
+				begin
+				position<=position;
+				position2<=position2;
+				end
+			else
+				begin
+				position<=position+1;
+				position2<=position2+1;
+				end
 		end
 	
 	initial begin

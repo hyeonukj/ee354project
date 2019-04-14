@@ -89,7 +89,7 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 			counter <= counter + 1;
 	end
 	
-	wire Red = CounterX>=(0) && CounterX<=(199) && CounterY<=(position+10) && CounterY>=(position-10)||(CounterY<=(position2+10) && CounterY>=(position2-10));
+	wire Red = CounterX>=(0) && CounterX<=(199) && CounterY<=(position+10) && CounterY>=(position-10)||(CounterX>=(0) && CounterX<=(199) &&CounterY<=(position2+10) && CounterY>=(position2-10));
 	//wire R2 = CounterX>=(0) && CounterX<=(199) && CounterY<=(position-160) && CounterY>=(position-180);
 	//wire R3 = CounterX>=(0) && CounterX<=(199) && CounterY<=(position-260) && CounterY>=(position-280);
 	

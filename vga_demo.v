@@ -56,13 +56,13 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 		begin
 			if(reset)
 				begin
-				position<=300;
-				position2<=150;
+				position[0]<=300;
+				position[1]<=150;
 				end
 			else if(btnD || btnU)
 				begin
-				position<=position;
-				position2<=position2;
+				position[0]<=100;
+				position[1]<=0;
 				end
 			else
 				begin
@@ -97,11 +97,11 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	//wire R2 = CounterX>=(0) && CounterX<=(199) && CounterY<=(position-160) && CounterY>=(position-180);
 	//wire R3 = CounterX>=(0) && CounterX<=(199) && CounterY<=(position-260) && CounterY>=(position-280);
 	
-	wire Green = CounterX>=(220) && CounterX<=(419) && CounterY<=(position+10) && CounterY>=(position-10);
+	wire Green = CounterX>=(220) && CounterX<=(419) && CounterY<=(position[0]+10) && CounterY>=(position[0]-10);
 	//wire G2 = CounterX>=(220) && CounterX<=(419) && CounterY<=(position-160) && CounterY>=(position-180);
 	//wire G3 = CounterX>=(220) && CounterX<=(419) && CounterY<=(position-260) && CounterY>=(position-280);
 	
-	wire Blue = CounterX>=(440) && CounterX<=(639) && CounterY<=(position+10) && CounterY>=(position-10);
+	wire Blue = CounterX>=(440) && CounterX<=(639) && CounterY<=(position[0]+10) && CounterY>=(position[0]-10);
 	//wire B2 = CounterX>=(440) && CounterX<=(639) && CounterY<=(position-160) && CounterY>=(position-180);
 	//wire B3 = CounterX>=(440) && CounterX<=(639) && CounterY<=(position-260) && CounterY>=(position-280);
 	
@@ -158,7 +158,7 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	assign SSD3 = 4'b1111;
 	assign SSD2 = 4'b1111;
 	assign SSD1 = 4'b1111;
-	assign SSD0 = position[3:0];
+	assign SSD0 = position[0][3:0];
 	
 	// need a scan clk for the seven segment display 
 	// 191Hz (50MHz / 2^18) works well

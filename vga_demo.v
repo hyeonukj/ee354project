@@ -47,6 +47,7 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	///////////////		VGA control starts here		/////////////////
 	/////////////////////////////////////////////////////////////////
 	reg [9:0] position;
+	reg [9:0] position2;
 	reg [3:0] notes [0:7];
 	reg [3:0] counter;
 	wire R, G, B;
@@ -79,9 +80,14 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 			counter <= 0;
 		else
 			counter <= counter + 1;
+		if(notes[counter][2])
+		begin
+			position2<=100;
+		end
+		
 	end
 	
-	wire Red = CounterX>=(0) && CounterX<=(199) && CounterY<=(position+10) && CounterY>=(position-10);
+	wire Red = CounterX>=(0) && CounterX<=(199) && CounterY<=(position+10) && CounterY>=(position-10)||(CounterY<=(position2+10) && CounterY>=(position2-10));
 	//wire R2 = CounterX>=(0) && CounterX<=(199) && CounterY<=(position-160) && CounterY>=(position-180);
 	//wire R3 = CounterX>=(0) && CounterX<=(199) && CounterY<=(position-260) && CounterY>=(position-280);
 	

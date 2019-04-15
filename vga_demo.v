@@ -48,41 +48,15 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	/////////////////////////////////////////////////////////////////
 	reg [9:0] position [0:8];
 	reg [3:0] notes [0:7];
-	reg [3:0] counter;
-	reg flag [0:8];
+	reg [8:0] counter;
+	reg [4:0] posCount;
+
+	reg flag [0:11];
 	reg [1:0] last_Rflag;
 	reg [1:0] last_Gflag;
 	reg [1:0] last_Bflag;
 	wire R, G, B;
 	integer i;
- 
-	always @(posedge DIV_CLK[21])
-		begin
-			if(reset)
-			begin
-				for (i = 0; i < 9; i = i+1)
-					position[i] <= 300;
-			end
-			else if(btnD || btnU)
-			begin
-				for (i = 0; i < 9; i = i+1)
-					position[i] <= position[i];
-			end
-			else
-			begin
-				for (i = 0; i < 9; i = i+1)
-				begin
-					if (flag[i] == 1)
-						position[i] <= position[0]+1;				
-					else if (position[i] > 480)
-					begin		
-						position[i] <= 0;
-						flag[i] <= 0;
-					end
-				end
-			end
-		end
-	
 	initial begin
 	notes[0] = 3'b000;
 	notes[1] = 3'b001;
@@ -92,36 +66,64 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	notes[5] = 3'b010;
 	notes[6] = 3'b100;
 	notes[7] = 3'b111;
-	end
-	
-	always @(posedge note_clk) 
+	for (i = 0; i < 9; i = i+1)
 	begin
-		if (reset)
-			counter <= 0;
-		else
-			counter <= counter + 1;
-		
-		if (notes[counter][2] == 1)
+					position[i] <= 0;
+					flag[i]<=0;
+					end
+	end
+	always @(posedge DIV_CLK[21])
 		begin
-			if ((flag[0] != 1) && (flag[1] != 1) && (flag[2] != 1))
+			if(reset)
 			begin
-				flag[0] <= 1;
-				last_Rflag <= 1;
+				posCount<=0;
+				counter<=0;
+				for (i = 0; i < 9; i = i+1)
+				begin
+					position[i] <= 0;
+					flag[i]<=0;
+					end
 			end
-			else if ((flag[1] != 1) && (flag[2] != 1))
+			else if(btnD || btnU)
 			begin
-				flag[1] <= 1;
-				last_Rflag <= 2;
-			end
-			else if (flag[2] != 1)
-			begin
-				//flag[2] <= 1;
-				last_Rflag <= 3;
+				for (i = 0; i < 9; i = i+1)
+					position[i] <= 100;
 			end
 			else
-				last_Rflag <= 1;
+			begin
+				for (i = 0; i < 9; i = i+1)
+				begin
+					if (flag[i] == 1)
+						position[i] <= position[i]+1;				
+					if (position[i] > 300)
+					begin		
+						position[i] <= 0;
+						flag[i] <= 0;
+					end
+				end
+				posCount<=posCount+1;
+				if(posCount==0)
+				begin
+					counter<=counter+1;
+					if (notes[counter][2] == 1)
+					begin
+						position[7]<=100;
+						if ((flag[0] != 1) && (flag[1] != 1) && (flag[2] != 1))
+							flag[0] <= 1;
+						else if ((flag[1] != 1) && (flag[0] == 1))
+							flag[1] <= 1;
+						else if (flag[1] == 1 &&flag[0]==1)
+							flag[2] <= 1;
+					end
+				end
+				
+			
+			end
 		end
-	end
+	
+	
+	
+
 	
 	wire R2 = CounterX>=0 && CounterX<=199 && CounterY<=(position[2]+20) && CounterY>=(position[2]-20);
 	wire R1 = CounterX>=0 && CounterX<=199 && CounterY<=(position[1]+20) && CounterY>=(position[1]-20);

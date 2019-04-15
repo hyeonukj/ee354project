@@ -96,7 +96,7 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 							if (flag[i] == 1)
 								position[i] <= position[i]+1;				
 							
-							if (position[i] > 300)
+							if (position[i] > 520)
 							begin		
 								position[i] <= 0;
 								flag[i] <= 0;
@@ -110,6 +110,8 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 				if(posCount==0)
 					begin
 						counter<=counter+1;
+						
+						// Red
 						if (notes[counter][2] == 1)
 							begin
 								if ((flag[0] != 1) && (flag[1] != 1) && (flag[2] != 1)) // 000
@@ -118,6 +120,28 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 									flag[1] <= 1;
 								else if ((flag[1] == 1) && (flag[0]==1))		// 011
 									flag[2] <= 1;
+							end
+						
+						// Green
+						if (notes[counter][1] == 1)
+							begin
+								if ((flag[3] != 1) && (flag[4] != 1) && (flag[5] != 1)) // 000
+									flag[3] <= 1;
+								else if ((flag[4] != 1) && (flag[3] == 1))		// 001
+									flag[4] <= 1;
+								else if ((flag[4] == 1) && (flag[3]==1))		// 011
+									flag[5] <= 1;
+							end
+							
+						// Blue
+						if (notes[counter][0] == 1)
+							begin
+								if ((flag[6] != 1) && (flag[7] != 1) && (flag[8] != 1)) // 000
+									flag[6] <= 1;
+								else if ((flag[7] != 1) && (flag[6] == 1))		// 001
+									flag[7] <= 1;
+								else if ((flag[7] == 1) && (flag[6]==1))		// 011
+									flag[8] <= 1;
 							end
 					end
 				end

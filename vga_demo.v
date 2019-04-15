@@ -75,50 +75,52 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	always @(posedge DIV_CLK[21])
 		begin
 			if(reset)
-			begin
-				posCount<=0;
-				counter<=0;
-				for (i = 0; i < 9; i = i+1)
 				begin
-					position[i] <= 0;
-					flag[i]<=0;
-					end
-			end
+					posCount<=0;
+					counter<=0;
+					for (i = 0; i < 9; i = i+1)
+						begin
+							position[i] <= 0;
+							flag[i]<=0;
+						end
+				end
 			else if(btnD || btnU)
-			begin
-				for (i = 0; i < 9; i = i+1)
-					position[i] <= 100;
-			end
+				begin
+					for (i = 0; i < 9; i = i+1)
+						position[i] <= 100;
+				end
 			else
-			begin
-				for (i = 0; i < 9; i = i+1)
 				begin
-					if (flag[i] == 1)
-						position[i] <= position[i]+1;				
-					if (position[i] > 300)
-					begin		
-						position[i] <= 0;
-						flag[i] <= 0;
-					end
-				end
-				posCount<=posCount+1;
-				if(posCount==0)
-				begin
-					counter<=counter+1;
-					if (notes[counter][2] == 1)
-					begin
-						position[7]<=100;
-						if ((flag[0] != 1) && (flag[1] != 1) && (flag[2] != 1))
-							flag[0] <= 1;
-						else if ((flag[1] != 1) && (flag[0] == 1))
-							flag[1] <= 1;
-						else if (flag[1] == 1 &&flag[0]==1)
-							flag[2] <= 1;
-					end
-				end
+					for (i = 0; i < 9; i = i+1)
+						begin
+							if (flag[i] == 1)
+								position[i] <= position[i]+1;				
+							
+							if (position[i] > 300)
+							begin		
+								position[i] <= 0;
+								flag[i] <= 0;
+							end
+						end
 				
-			
-			end
+				posCount<=posCount+1;
+					
+				// posCount is the interval between the current note and the next note on the screen
+				// increments continuously, goes back to 0 after overflow
+				if(posCount==0)
+					begin
+						counter<=counter+1;
+						if (notes[counter][2] == 1)
+							begin
+								if ((flag[0] != 1) && (flag[1] != 1) && (flag[2] != 1)) // 000
+									flag[0] <= 1;
+								else if ((flag[1] != 1) && (flag[0] == 1))		// 001
+									flag[1] <= 1;
+								else if ((flag[1] == 1) && (flag[0]==1))		// 011
+									flag[2] <= 1;
+							end
+					end
+				end
 		end
 	
 	

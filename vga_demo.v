@@ -50,26 +50,37 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	reg [3:0] notes [0:7];
 	reg [3:0] counter;
 	reg flag[0:8];
+	reg [1:0] last_Rflag;
+	reg [1:0] last_Gflag;
+	reg [1:0] last_Bflag;
 	wire R, G, B;
+	integer i;
  
 	always @(posedge DIV_CLK[21])
 		begin
 			if(reset)
-				begin
-				position[0]<=300;
-				position[1]<=150;
-				end
+			begin
+				for (i = 0; i < 9; i = i+1)
+					position[i] <= 300;
+			end
 			else if(btnD || btnU)
-				begin
-				position[0]<=100;
-				position[1]<=0;
-				end
+			begin
+				for (i = 0; i < 9; i = i+1)
+					position[i] <= position[i];
+			end
 			else
+			begin
+				for (i = 0; i < 9; i = i+1)
 				begin
-				position[0]<=position[0]+1;
-				if(flag1==1)
-					position[1]<=position[1]+1;
+					if (flag[i] == 1)
+						position[i] <= position[0]+1;				
+					else if (position[i] > 480)
+					begin		
+						position[i] <= 0;
+						flag[i] <= 0;
+					end
 				end
+			end
 		end
 	
 	initial begin
@@ -89,25 +100,38 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 			counter <= 0;
 		else
 			counter <= counter + 1;
-		if(notes[counter][2]==1)
-			flag1=1;
+		
+		if (notes[counter][2] == 1)
+		begin
+			if ((flag[0] != 1) && (flag[1] != 1) && (flag[2] != 1))
+			begin
+				flag[0] <= 1;
+				//last_Rflag <= 1;
+			end
+			else if ((flag[1] != 1) && (flag[2] != 1))
+			begin
+				flag[1] <= 1;
+				//last_Rflag <= 2;
+			end
+			else if (flag[2] != 1)
+			begin
+				flag[2] <= 1;
+				//last_Rflag <= 3;
+			end
+		end
 	end
 	
 	wire R2 = CounterX>=0 && CounterX<=199 && CounterY<=(position[2]+20) && CounterY>=(position[2]-20);
 	wire R1 = CounterX>=0 && CounterX<=199 && CounterY<=(position[1]+20) && CounterY>=(position[1]-20);
 	wire Red = (CounterX>=0 && CounterX<=199 && CounterY<=(position[0]+20) && CounterY>=(position[0]-20)) || R1 || R2;
-	//wire R2 = CounterX>=(0) && CounterX<=(199) && CounterY<=(position-160) && CounterY>=(position-180);
-	//wire R3 = CounterX>=(0) && CounterX<=(199) && CounterY<=(position-260) && CounterY>=(position-280);
 	
-	wire G4b CounterX>=220 && CounterX<=419 && CounterY<=(position[5]+20) && CounterY>=(position[5]-20);
-	wire G5 =unterX>=220 && CounterX<=419 && CounterY<=(position[4]+20) && CounterY>=(position[4]-20);
-	wire Green = (CounterX>=220 && CounterX<=419 && CounterY<=(position[3]+10) && CounterY>=(position[3]-10)) || G4| G5;
-	//wire G2 = CounterX>=(220) && CounterX<=(419) && CounterY<=(position-160) && CounterY>=(position-180);
-	//wire G3 = CounterX>=(220) && CounterX<=(419) && CounterY<=(position-260) && CounterY>=(position-280);
-	
-	wire Blue = CounterX>=440 && CounterX<=639 && CounterY<=(position[0]+10) && CounterY>=(position[0]-10);
-	//wire B2 = CounterX>=(440) && CounterX<=(639) && CounterY<=(position-160) && CounterY>=(position-180);
-	//wire B3 = CounterX>=(440) && CounterX<=(639) && CounterY<=(position-260) && CounterY>=(position-280);
+	wire G4 = CounterX>=220 && CounterX<=419 && CounterY<=(position[5]+20) && CounterY>=(position[5]-20);
+	wire G5 = CounterX>=220 && CounterX<=419 && CounterY<=(position[4]+20) && CounterY>=(position[4]-20);
+	wire Green = (CounterX>=220 && CounterX<=419 && CounterY<=(position[3]+20) && CounterY>=(position[3]-20)) || G4| G5;
+
+	wire B8 = CounterX>=440 && CounterX<=639 && CounterY<=(position[8]+20) && CounterY>=(position[8]-20);
+	wire B7 = CounterX>=440 && CounterX<=639 && CounterY<=(position[7]+20) && CounterY>=(position[7]-20);
+	wire Blue = CounterX>=440 && CounterX<=639 && CounterY<=(position[6]+20) && CounterY>=(position[6]-20) || B7 || B8;
 	
 	assign R = notes[counter][2] ? Red : 0;
 	assign G = notes[counter][1] ? Green : 0;
@@ -132,7 +156,7 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	`define QGAME_2 	2'b10
 	`define QDONE 		2'b11
 	
-	reg [3:0] p2_score;
+	reg [3:0] p2_score; 
 	reg [3:0] p1_score;
 	reg [1:0] state;
 	wire LD0, LD1, LD2, LD3, LD4, LD5, LD6, LD7;

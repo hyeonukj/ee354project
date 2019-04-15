@@ -49,7 +49,7 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	reg [9:0] position [0:8];
 	reg [3:0] notes [0:7];
 	reg [3:0] counter;
-	reg flag[0:8];
+	reg flag [0:8];
 	reg [1:0] last_Rflag;
 	reg [1:0] last_Gflag;
 	reg [1:0] last_Bflag;
@@ -106,18 +106,20 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 			if ((flag[0] != 1) && (flag[1] != 1) && (flag[2] != 1))
 			begin
 				flag[0] <= 1;
-				//last_Rflag <= 1;
+				last_Rflag <= 1;
 			end
 			else if ((flag[1] != 1) && (flag[2] != 1))
 			begin
 				flag[1] <= 1;
-				//last_Rflag <= 2;
+				last_Rflag <= 2;
 			end
 			else if (flag[2] != 1)
 			begin
-				flag[2] <= 1;
-				//last_Rflag <= 3;
+				//flag[2] <= 1;
+				last_Rflag <= 3;
 			end
+			else
+				last_Rflag <= 1;
 		end
 	end
 	

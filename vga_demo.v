@@ -49,7 +49,7 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	reg [9:0] position [0:8];
 	reg [3:0] notes [0:7];
 	reg [8:0] counter;
-	reg [4:0] posCount;
+	reg [5:0] posCount;
 	reg [2:0] state;	
 	reg flag [0:11];
 	wire R, G, B;
@@ -94,7 +94,7 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 			else if (btnD)
 				begin
 					for (i = 0; i < 9; i = i+1)
-						position[i] <= 100;
+						position[i] <= position[i];
 				end
 			else
 				begin
@@ -210,10 +210,10 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	assign LD2 = start;
 	assign LD4 = reset;
 	
-	// assign LD3 = (state == `QI);
-	// assign LD5 = (state == `QGAME_1);	
-	// assign LD6 = (state == `QGAME_2);
-	// assign LD7 = (state == `QDONE);
+	assign LD3 = 1'b0;//(state == `QI);
+	assign LD5 = 1'b0;	
+	assign LD6 = 1'b0;
+	assign LD7 = 1'b0;
 	
 	/////////////////////////////////////////////////////////////////
 	//////////////  	  LD control ends here 	 	////////////////////

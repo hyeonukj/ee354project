@@ -3,11 +3,11 @@
 // VGA verilog template
 // Author:  Da Cheng
 //////////////////////////////////////////////////////////////////////////////////
-module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, btnU, btnD,
+module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, btnU,btnL, btnD,
 	St_ce_bar, St_rp_bar, Mt_ce_bar, Mt_St_oe_bar, Mt_St_we_bar,
 	An0, An1, An2, An3, Ca, Cb, Cc, Cd, Ce, Cf, Cg, Dp,
 	LD0, LD1, LD2, LD3, LD4, LD5, LD6, LD7);
-	input ClkPort, Sw0, btnU, btnD, Sw0, Sw1;
+	input ClkPort, Sw0, btnU, btnL,btnD, Sw0, Sw1;
 	output St_ce_bar, St_rp_bar, Mt_ce_bar, Mt_St_oe_bar, Mt_St_we_bar;
 	output vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b;
 	output An0, An1, An2, An3, Ca, Cb, Cc, Cd, Ce, Cf, Cg, Dp;
@@ -199,8 +199,22 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 				end
 		end
 	
-	
-	wire box = CounterX>=0 && CounterX<=640 && CounterY<=100 && CounterY>=60; 
+	reg [8:0] boxPos;
+	reg tempFlag;
+	always @(posedge DIV_CLK[1])
+	begin
+		if (tempFlag==0)
+			begin
+				boxPos<=450;
+				tempFlag<=1;
+			end
+		else
+			begin
+				boxPos<=410;
+				tempFlag<=0;
+			end
+	end
+	wire box = CounterX>=0 && CounterX<=640 && CounterY<=boxPos && CounterY>=410; 
 	
 	wire R4 = CounterX>=0 && CounterX<=199 && CounterY<=(position[4]+20) && CounterY>=(position[4]-20);
 	wire R3 = CounterX>=0 && CounterX<=199 && CounterY<=(position[3]+20) && CounterY>=(position[3]-20);

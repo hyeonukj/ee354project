@@ -171,7 +171,7 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 												flag[6] <= 1;
 											else if ((flag[6]==1)&& (flag[7] != 1))		// 011
 												flag[7] <= 1;
-											else if (((flag[7] == 1)&& (flag[8] != 1))		// 011
+											else if ((flag[7] == 1)&& (flag[8] != 1))		// 011
 												flag[8] <= 1;
 											else if ((flag[8] == 1)&& (flag[9] != 1))		// 011
 												flag[9] <= 1;

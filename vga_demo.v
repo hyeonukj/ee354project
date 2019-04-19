@@ -50,13 +50,16 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	reg [3:0] notes [0:7];
 	reg [8:0] counter;
 	reg [4:0] posCount;
-
+	reg [2:0] state;	
 	reg flag [0:11];
-	reg [1:0] last_Rflag;
-	reg [1:0] last_Gflag;
-	reg [1:0] last_Bflag;
 	wire R, G, B;
 	integer i;
+	
+	localparam
+	INITIAL = 3'b001,
+	PLAY    = 3'b010,
+	DONE    = 3'b100;
+	
 	initial begin
 	notes[0] = 3'b000;
 	notes[1] = 3'b001;
@@ -66,90 +69,105 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	notes[5] = 3'b010;
 	notes[6] = 3'b100;
 	notes[7] = 3'b111;
+	
 	for (i = 0; i < 9; i = i+1)
-	begin
-					position[i] <= 0;
-					flag[i]<=0;
-					end
+		begin
+			position[i] = 0;
+			flag[i] = 0;	
+		end
+	
 	end
+			
 	always @(posedge DIV_CLK[21])
 		begin
 			if (reset)
 				begin
-					posCount<=0;
-					counter<=0;
+					state <= INITIAL;
+					posCount <= 0;
+					counter <= 0;
 					for (i = 0; i < 9; i = i+1)
 						begin
 							position[i] <= 0;
 							flag[i] <= 0;
 						end
 				end
-			else if (btnD || btnU)
+			else if (btnD)
 				begin
 					for (i = 0; i < 9; i = i+1)
 						position[i] <= 100;
 				end
 			else
 				begin
-					for (i = 0; i < 9; i = i+1)
+					case (state)
+					INITIAL:
 						begin
-							if (flag[i] == 1)
-								position[i] <= position[i]+1;				
-							
-							if (position[i] > 520)
-							begin		
-								position[i] <= 0;
-								flag[i] <= 0;
-							end
+							// initial state here
+							if (start == 1) 
+								state <= PLAY;
 						end
-				
-				posCount<=posCount+1;
-					
-				// posCount is the interval between the current note and the next note on the screen
-				// increments continuously, goes back to 0 after overflow
-				if(posCount==0)
-					begin
-						counter<=counter+1;
-						
-						// Red
-						if (notes[counter][2] == 1)
-							begin
-								if ((flag[0] != 1) && (flag[1] != 1) && (flag[2] != 1)) // 000
-									flag[0] <= 1;
-								else if ((flag[1] != 1) && (flag[0] == 1))		// 001
-									flag[1] <= 1;
-								else if ((flag[1] == 1) && (flag[0]==1))		// 011
-									flag[2] <= 1;
-							end
-						
-						// Green
-						if (notes[counter][1] == 1)
-							begin
-								if ((flag[3] != 1) && (flag[4] != 1) && (flag[5] != 1)) // 000
-									flag[3] <= 1;
-								else if ((flag[4] != 1) && (flag[3] == 1))		// 001
-									flag[4] <= 1;
-								else if ((flag[4] == 1) && (flag[3]==1))		// 011
-									flag[5] <= 1;
-							end
+					PLAY:
+						begin
+							if (btnU)
+								state <= INITIAL;
 							
-						// Blue
-						if (notes[counter][0] == 1)
-							begin
-								if ((flag[6] != 1) && (flag[7] != 1) && (flag[8] != 1)) // 000
-									flag[6] <= 1;
-								else if ((flag[7] != 1) && (flag[6] == 1))		// 001
-									flag[7] <= 1;
-								else if ((flag[7] == 1) && (flag[6]==1))		// 011
-									flag[8] <= 1;
-							end
-					end
+							for (i = 0; i < 9; i = i+1)
+								begin
+									if (flag[i] == 1)
+										position[i] <= position[i] + 1;				
+									
+									if (position[i] > 520)
+										begin		
+											position[i] <= 0;
+											flag[i] <= 0;
+										end
+								end
+						
+							posCount <= posCount + 1;
+							
+							// posCount is the interval between the current note and the next note on the screen
+							// increments continuously, goes back to 0 after overflow
+							if(posCount == 0)
+								begin
+									counter <= counter + 1;
+									
+									// Red
+									if (notes[counter][2] == 1)
+										begin
+											if ((flag[0] != 1) && (flag[1] != 1) && (flag[2] != 1)) // 000
+												flag[0] <= 1;
+											else if ((flag[1] != 1) && (flag[0] == 1))		// 001
+												flag[1] <= 1;
+											else if ((flag[1] == 1) && (flag[0]==1))		// 011
+												flag[2] <= 1;
+										end
+									
+									// Green
+									if (notes[counter][1] == 1)
+										begin
+											if ((flag[3] != 1) && (flag[4] != 1) && (flag[5] != 1)) // 000
+												flag[3] <= 1;
+											else if ((flag[4] != 1) && (flag[3] == 1))		// 001
+												flag[4] <= 1;
+											else if ((flag[4] == 1) && (flag[3]==1))		// 011
+												flag[5] <= 1;
+										end
+										
+									// Blue
+									if (notes[counter][0] == 1)
+										begin
+											if ((flag[6] != 1) && (flag[7] != 1) && (flag[8] != 1)) // 000
+												flag[6] <= 1;
+											else if ((flag[7] != 1) && (flag[6] == 1))		// 001
+												flag[7] <= 1;
+											else if ((flag[7] == 1) && (flag[6]==1))		// 011
+												flag[8] <= 1;
+										end
+								end
+						end
+					endcase
 				end
 		end
 	
-	
-	
-
 	
 	wire R2 = CounterX>=0 && CounterX<=199 && CounterY<=(position[2]+20) && CounterY>=(position[2]-20);
 	wire R1 = CounterX>=0 && CounterX<=199 && CounterY<=(position[1]+20) && CounterY>=(position[1]-20);
@@ -184,7 +202,6 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	
 	reg [3:0] p2_score; 
 	reg [3:0] p1_score;
-	reg [1:0] state;
 	wire LD0, LD1, LD2, LD3, LD4, LD5, LD6, LD7;
 	
 	assign LD0 = (p1_score == 4'b1010);
@@ -193,10 +210,10 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	assign LD2 = start;
 	assign LD4 = reset;
 	
-	assign LD3 = (state == `QI);
-	assign LD5 = (state == `QGAME_1);	
-	assign LD6 = (state == `QGAME_2);
-	assign LD7 = (state == `QDONE);
+	// assign LD3 = (state == `QI);
+	// assign LD5 = (state == `QGAME_1);	
+	// assign LD6 = (state == `QGAME_2);
+	// assign LD7 = (state == `QDONE);
 	
 	/////////////////////////////////////////////////////////////////
 	//////////////  	  LD control ends here 	 	////////////////////

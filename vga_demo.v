@@ -84,7 +84,7 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	notes[20] = 3'b010;
 	notes[21] = 3'b101;
 	notes[22] = 3'b011;
-	
+		
 	for (i = 0; i < 15; i = i+1)
 		begin
 			position[i] = 0;
@@ -199,23 +199,26 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 				end
 		end
 	
+	
+	wire box = CounterX>=0 && CounterX<=640 && CounterY<=100 && CounterY>=60; 
+	
 	wire R4 = CounterX>=0 && CounterX<=199 && CounterY<=(position[4]+20) && CounterY>=(position[4]-20);
 	wire R3 = CounterX>=0 && CounterX<=199 && CounterY<=(position[3]+20) && CounterY>=(position[3]-20);
 	wire R2 = CounterX>=0 && CounterX<=199 && CounterY<=(position[2]+20) && CounterY>=(position[2]-20);
 	wire R1 = CounterX>=0 && CounterX<=199 && CounterY<=(position[1]+20) && CounterY>=(position[1]-20);
-	wire Red = (CounterX>=0 && CounterX<=199 && CounterY<=(position[0]+20) && CounterY>=(position[0]-20)) || R1 || R2 || R3 || R4;
+	wire Red = (CounterX>=0 && CounterX<=199 && CounterY<=(position[0]+20) && CounterY>=(position[0]-20)) || R1 || R2 || R3 || R4 || box;
 
 	wire G9 = CounterX>=220 && CounterX<=419 && CounterY<=(position[9]+20) && CounterY>=(position[9]-20);
 	wire G8 = CounterX>=220 && CounterX<=419 && CounterY<=(position[8]+20) && CounterY>=(position[8]-20);	
 	wire G7 = CounterX>=220 && CounterX<=419 && CounterY<=(position[7]+20) && CounterY>=(position[7]-20);
 	wire G6 = CounterX>=220 && CounterX<=419 && CounterY<=(position[6]+20) && CounterY>=(position[6]-20);
-	wire Green = (CounterX>=220 && CounterX<=419 && CounterY<=(position[5]+20) && CounterY>=(position[5]-20)) || G6 || G7 || G8 || G9;
+	wire Green = (CounterX>=220 && CounterX<=419 && CounterY<=(position[5]+20) && CounterY>=(position[5]-20)) || G6 || G7 || G8 || G9 || box;
 
 	wire B14 = CounterX>=440 && CounterX<=639 && CounterY<=(position[14]+20) && CounterY>=(position[14]-20);
 	wire B13 = CounterX>=440 && CounterX<=639 && CounterY<=(position[13]+20) && CounterY>=(position[13]-20);
 	wire B12 = CounterX>=440 && CounterX<=639 && CounterY<=(position[12]+20) && CounterY>=(position[12]-20);
 	wire B11 = CounterX>=440 && CounterX<=639 && CounterY<=(position[11]+20) && CounterY>=(position[11]-20);
-	wire Blue = CounterX>=440 && CounterX<=639 && CounterY<=(position[10]+20) && CounterY>=(position[10]-20) || B11 || B12 || B13 || B14;
+	wire Blue = CounterX>=440 && CounterX<=639 && CounterY<=(position[10]+20) && CounterY>=(position[10]-20) || B11 || B12 || B13 || B14 || box;
 	
 	always @(posedge clk)
 	begin

@@ -47,11 +47,11 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	///////////////		VGA control starts here		/////////////////
 	/////////////////////////////////////////////////////////////////
 	reg [9:0] position [0:14];
-	reg [2:0] notes [0:15];
+	reg [2:0] notes [0:22];
 	reg [8:0] counter;
 	reg [5:0] posCount;
 	reg [2:0] state;	
-	reg flag [0:11];
+	reg flag [0:14];
 	wire R, G, B;
 	integer i;
 	
@@ -76,9 +76,16 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	notes[12] = 3'b010;
 	notes[13] = 3'b101;
 	notes[14] = 3'b011;
+	notes[15] = 3'b111;
+	notes[16] = 3'b010;
+	notes[17] = 3'b101;
+	notes[18] = 3'b010;
+	notes[19] = 3'b101;
+	notes[20] = 3'b010;
+	notes[21] = 3'b101;
+	notes[22] = 3'b011;
 	
-	
-	for (i = 0; i < 9; i = i+1)
+	for (i = 0; i < 15; i = i+1)
 		begin
 			position[i] = 0;
 			flag[i] = 0;	
@@ -86,7 +93,7 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	
 	end
 			
-	always @(posedge DIV_CLK[20])
+	always @(posedge DIV_CLK[19])
 		begin
 			if (reset)
 				begin
@@ -122,7 +129,7 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 									if (flag[i] == 1)
 										position[i] <= position[i] + 1;				
 									
-									if (position[i] > 520)
+									if (position[i] > 490)
 										begin		
 											position[i] <= 0;
 											flag[i] <= 0;
@@ -140,34 +147,51 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 									// Red
 									if (notes[counter][2] == 1)
 										begin
-											if ((flag[0] != 1) && (flag[1] != 1) && (flag[2] != 1)) // 000
+											if ((flag[0] != 1) && (flag[1] != 1) && (flag[2] != 1)&& (flag[3] != 1)&& (flag[4] != 1)) // 000
 												flag[0] <= 1;
+											else if((flag[4]==1)&&(flag[0]!=1))
+												flag[0] <=1;
 											else if ((flag[1] != 1) && (flag[0] == 1))		// 001
 												flag[1] <= 1;
-											else if ((flag[1] == 1) && (flag[0]==1))		// 011
+											else if ((flag[1]==1)&& (flag[2] != 1))		// 011
 												flag[2] <= 1;
+											else if ((flag[2] == 1)&& (flag[3] != 1))		// 011
+												flag[3] <= 1;
+											else if ((flag[3] == 1)&& (flag[4] != 1))		// 011
+												flag[4] <= 1;
 										end
-									
 									// Green
 									if (notes[counter][1] == 1)
 										begin
-											if ((flag[3] != 1) && (flag[4] != 1) && (flag[5] != 1)) // 000
-												flag[3] <= 1;
-											else if ((flag[4] != 1) && (flag[3] == 1))		// 001
-												flag[4] <= 1;
-											else if ((flag[4] == 1) && (flag[3]==1))		// 011
+											if ((flag[5] != 1) && (flag[6] != 1) && (flag[7] != 1)&& (flag[8] != 1)&& (flag[9] != 1)) // 000
 												flag[5] <= 1;
+											else if((flag[9]==1)&&(flag[5]!=1))
+												flag[5] <=1;
+											else if ((flag[6] != 1) && (flag[5] == 1))		// 001
+												flag[6] <= 1;
+											else if ((flag[6]==1)&& (flag[7] != 1))		// 011
+												flag[7] <= 1;
+											else if (((flag[7] == 1)&& (flag[8] != 1))		// 011
+												flag[8] <= 1;
+											else if ((flag[8] == 1)&& (flag[9] != 1))		// 011
+												flag[9] <= 1;
 										end
 										
 									// Blue
 									if (notes[counter][0] == 1)
 										begin
-											if ((flag[6] != 1) && (flag[7] != 1) && (flag[8] != 1)) // 000
-												flag[6] <= 1;
-											else if ((flag[7] != 1) && (flag[6] == 1))		// 001
-												flag[7] <= 1;
-											else if ((flag[7] == 1) && (flag[6]==1))		// 011
-												flag[8] <= 1;
+											if ((flag[10] != 1) && (flag[11] != 1) && (flag[12] != 1)&& (flag[13] != 1)&& (flag[14] != 1)) // 000
+												flag[10] <= 1;
+											else if((flag[14]==1)&&(flag[10]!=1))
+												flag[0] <=1;
+											else if ((flag[11] != 1) && (flag[10] == 1))		// 001
+												flag[11] <= 1;
+											else if ((flag[11]==1)&& (flag[12] != 1))		// 011
+												flag[12] <= 1;
+											else if ((flag[12] == 1)&& (flag[13] != 1))		// 011
+												flag[13] <= 1;
+											else if ((flag[13] == 1)&& (flag[14] != 1))		// 011
+												flag[14] <= 1;
 										end
 								end
 						end

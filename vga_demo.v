@@ -74,17 +74,17 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	end
 	always @(posedge DIV_CLK[21])
 		begin
-			if(reset)
+			if (reset)
 				begin
 					posCount<=0;
 					counter<=0;
 					for (i = 0; i < 9; i = i+1)
 						begin
 							position[i] <= 0;
-							flag[i]<=0;
+							flag[i] <= 0;
 						end
 				end
-			else if(btnD || btnU)
+			else if (btnD || btnU)
 				begin
 					for (i = 0; i < 9; i = i+1)
 						position[i] <= 100;
@@ -157,15 +157,11 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	
 	wire G4 = CounterX>=220 && CounterX<=419 && CounterY<=(position[5]+20) && CounterY>=(position[5]-20);
 	wire G5 = CounterX>=220 && CounterX<=419 && CounterY<=(position[4]+20) && CounterY>=(position[4]-20);
-	wire Green = (CounterX>=220 && CounterX<=419 && CounterY<=(position[3]+20) && CounterY>=(position[3]-20)) || G4| G5;
+	wire Green = (CounterX>=220 && CounterX<=419 && CounterY<=(position[3]+20) && CounterY>=(position[3]-20)) || G4 || G5;
 
 	wire B8 = CounterX>=440 && CounterX<=639 && CounterY<=(position[8]+20) && CounterY>=(position[8]-20);
 	wire B7 = CounterX>=440 && CounterX<=639 && CounterY<=(position[7]+20) && CounterY>=(position[7]-20);
 	wire Blue = CounterX>=440 && CounterX<=639 && CounterY<=(position[6]+20) && CounterY>=(position[6]-20) || B7 || B8;
-	
-	assign R = notes[counter][2] ? Red : 0;
-	assign G = notes[counter][1] ? Green : 0;
-	assign B = notes[counter][0] ? Blue : 0;
 	
 	always @(posedge clk)
 	begin

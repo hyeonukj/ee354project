@@ -69,6 +69,15 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	notes[5] = 3'b010;
 	notes[6] = 3'b100;
 	notes[7] = 3'b111;
+	notes[8] = 3'b010;
+	notes[9] = 3'b101;
+	notes[10] = 3'b010;
+	notes[11] = 3'b101;
+	notes[12] = 3'b010;
+	notes[13] = 3'b101;
+	notes[14] = 3'b011;
+	notes[15] = 3'b001;
+	
 	
 	for (i = 0; i < 9; i = i+1)
 		begin
@@ -78,7 +87,7 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	
 	end
 			
-	always @(posedge DIV_CLK[21])
+	always @(posedge DIV_CLK[20])
 		begin
 			if (reset)
 				begin
@@ -101,7 +110,6 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 					case (state)
 					INITIAL:
 						begin
-							// initial state here
 							if (start == 1) 
 								state <= PLAY;
 						end

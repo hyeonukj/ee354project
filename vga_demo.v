@@ -436,8 +436,8 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	
 	wire box = CounterX>=0 && CounterX<=640 && CounterY<=boxPos && CounterY>=410; 
 	wire r_hit = CounterX>=0 && CounterX<=199 && CounterY<=(redBoxPos) && CounterY>=(410);
-	wire g_hit = CounterX>=220 && CounterX<=419 && CounterY<=(redBoxPos) && CounterY>=(410);
-	wire b_hit = CounterX>=440 && CounterX<=639 && CounterY<=(redBoxPos) && CounterY>=(410);
+	wire g_hit = CounterX>=220 && CounterX<=419 && CounterY<=(greenBoxPos) && CounterY>=(410);
+	wire b_hit = CounterX>=440 && CounterX<=639 && CounterY<=(blueBoxPos) && CounterY>=(410);
 
 	
 	wire R4 = CounterX>=0 && CounterX<=199 && CounterY<=(position[4]+20) && CounterY>=(position[4]-20);

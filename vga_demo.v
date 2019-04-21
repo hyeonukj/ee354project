@@ -48,19 +48,7 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	/////////////////////////////////////////////////////////////////
 	reg [9:0] position [0:14];
 	reg [2:0] notes [0:202];
-	reg [8:0] counter;
-	reg [5:0] posCount;
-	reg [2:0] state;	
 	reg flag [0:14];
-	wire R, G, B;
-	integer i;
-	assign	sys_clk = board_clk;
-	wire  SCEN_btnC;
-	ee201_debouncer #(.N_dc(4)) btnC_debounce(.CLK(sys_clk), .RESET(), .PB(btnC), .DPB( ), .SCEN(SCEN_btnC), .MCEN( ), .CCEN( ));
-	localparam
-	INITIAL = 3'b001,
-	PLAY    = 3'b010,
-	DONE    = 3'b100;
 	
 	initial begin
 	notes[0] = 3'b000;
@@ -274,7 +262,29 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 		end
 	
 	end
-			
+	
+	
+	reg [8:0] counter;
+	reg [5:0] posCount;
+	reg [2:0] state;	
+	reg [8:0] redBoxPos;
+	reg [8:0] greenBoxPos;
+	reg [8:0] blueBoxPos;
+	reg [8:0] boxPos;
+	reg [8:0] redTest;
+	reg tempFlag;
+	reg hitFlag[0:2];
+	reg [7:0] score;
+	wire R, G, B;
+	integer i;
+	
+	assign	sys_clk = board_clk;
+	
+	localparam
+	INITIAL = 3'b001,
+	PLAY    = 3'b010,
+	DONE    = 3'b100;
+
 	always @(posedge DIV_CLK[19])
 		begin
 			if (reset)
@@ -297,9 +307,10 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 				begin
 					case (state)
 					INITIAL:
-						begin
+						begin							
 							if (start == 1) 
 								state <= PLAY;
+								
 						end
 					PLAY:
 						begin
@@ -381,40 +392,48 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 				end
 		end
 	
-	reg [8:0] redBoxPos;
-	reg [8:0] greenBoxPos;
-	reg [8:0] blueBoxPos;
-
-	reg [8:0] boxPos;
-	reg [8:0] redTest;
-	reg tempFlag;
-	reg hitFlag[0:2];
+	
 
 	always@ (posedge sys_clk)
 	begin
 		if(btnL)
-		begin
-			redBoxPos<=450;
-		end
+			begin
+				redBoxPos <= 450;
+				
+				for (i = 0; i < 5; i = i+1)
+					begin
+						if ((position[i] >= 430) && (position[i] <= 470))
+							score <= score + 1;
+					end
+			end
 		else
-			redBoxPos<=0;
+			redBoxPos <= 0;
 			
 		if(btnC)
-		begin
-			greenBoxPos<=450;
-		end
+			begin
+				greenBoxPos <= 450;
+				
+				for (i = 5; i < 10; i = i+1)
+					begin
+						if ((position[i] >= 430) && (position[i] <= 470))
+							score <= score + 1;
+					end
+			end
 		else
-			greenBoxPos<=0;
+			greenBoxPos <= 0;
 		
 		if(btnR)
-		begin
-			blueBoxPos<=450;
-		end
+			begin
+				blueBoxPos <= 450;
+				
+				for (i = 10; i < 15; i = i+1)
+					begin
+						if ((position[i] >= 430) && (position[i] <= 470))
+							score <= score + 1;
+					end
+			end
 		else
-			blueBoxPos<=0;
-		
-		
-		
+			blueBoxPos <= 0;
 	end
 	
 	always @(posedge DIV_CLK[1])
@@ -503,11 +522,16 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	reg 	[3:0]	SSD;
 	wire 	[3:0]	SSD0, SSD1, SSD2, SSD3;
 	wire 	[1:0] ssdscan_clk;
+	wire ones, tens, hundreds, thousands;
+	
+	assign ones = score % 10;
+	assign tens = (score % 100 - ones)/10;
+	assign hundreds = (score % 1000 - tens*10 - ones)/100;
 	
 	assign SSD3 = 4'b1111;
-	assign SSD2 = 4'b1111;
-	assign SSD1 = 4'b1111;
-	assign SSD0 = position[0][3:0];
+	assign SSD2 = hundreds;
+	assign SSD1 = tens;
+	assign SSD0 = ones;
 	
 	// need a scan clk for the seven segment display 
 	// 191Hz (50MHz / 2^18) works well

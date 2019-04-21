@@ -390,23 +390,13 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 
 	always@ (posedge sys_clk)
 	begin
-		if(SCEN_btnC)
+		if(btnL)
 		begin
-			hitFlag[0]<=1;
-		end
-		
-		if(hitFlag[0]==1)
-		begin
-			redBoxPos<=450;
 			redTest <= redTest+1;
-			if(redTest==400)
-			begin
-				hitFlag[0]<=0;
-				redTest<=0;
-				redBoxPos<=0;
-			end
+			redBoxPos<=450;
 		end
-		
+		else
+			redBoxPos<=0;
 		
 	end
 	
@@ -433,7 +423,7 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	wire R3 = CounterX>=0 && CounterX<=199 && CounterY<=(position[3]+20) && CounterY>=(position[3]-20);
 	wire R2 = CounterX>=0 && CounterX<=199 && CounterY<=(position[2]+20) && CounterY>=(position[2]-20);
 	wire R1 = CounterX>=0 && CounterX<=199 && CounterY<=(position[1]+20) && CounterY>=(position[1]-20);
-	wire Red = (CounterX>=0 && CounterX<=199 && CounterY<=(position[0]+20) && CounterY>=(position[0]-20)) || R1 || R2 || R3 || R4 || box || r_hit;
+	wire Red = (CounterX>=0 && CounterX<=199 && CounterY<=(position[0]+20) && CounterY>=(position[0]-20)) || R1 || R2 || R3 || R4 || r_hit;
 
 	wire G9 = CounterX>=220 && CounterX<=419 && CounterY<=(position[9]+20) && CounterY>=(position[9]-20);
 	wire G8 = CounterX>=220 && CounterX<=419 && CounterY<=(position[8]+20) && CounterY>=(position[8]-20);	

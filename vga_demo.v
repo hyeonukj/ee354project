@@ -54,7 +54,9 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	reg flag [0:14];
 	wire R, G, B;
 	integer i;
-	
+	assign	sys_clk = board_clk;
+	wire  SCEN_btnC;
+	ee201_debouncer #(.N_dc(4)) btnC_debounce(.CLK(sys_clk), .RESET(), .PB(btnC), .DPB( ), .SCEN(SCEN_btnC), .MCEN( ), .CCEN( ));
 	localparam
 	INITIAL = 3'b001,
 	PLAY    = 3'b010,
@@ -106,7 +108,7 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 							flag[i] <= 0;
 						end
 				end
-			else if (btnD)
+			else if (btnU)
 				begin
 					for (i = 0; i < 15; i = i+1)
 						position[i] <= position[i];
@@ -137,7 +139,7 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 								end
 						
 							posCount <= posCount + 1;
-							
+															
 							// posCount is the interval between the current note and the next note on the screen
 							// increments continuously, goes back to 0 after overflow
 							if(posCount == 0)
@@ -199,8 +201,35 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 				end
 		end
 	
+	reg [8:0] redBoxPos;
+
 	reg [8:0] boxPos;
+	reg [8:0] redTest;
 	reg tempFlag;
+	reg hitFlag[0:2];
+
+	always@ (posedge sys_clk)
+	begin
+		if(SCEN_btnC)
+		begin
+			hitFlag[0]<=1;
+		end
+		
+		if(hitFlag[0]==1)
+		begin
+			redBoxPos<=450;
+			redTest <= redTest+1;
+			if(redTest==400)
+			begin
+				hitFlag[0]<=0;
+				redTest<=0;
+				redBoxPos<=0;
+			end
+		end
+		
+		
+	end
+	
 	always @(posedge DIV_CLK[1])
 	begin
 		if (tempFlag==0)
@@ -213,26 +242,30 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 				boxPos<=410;
 				tempFlag<=0;
 			end
+			
 	end
-	wire box = CounterX>=0 && CounterX<=640 && CounterY<=boxPos && CounterY>=410; 
 	
+	
+	
+	wire box = CounterX>=0 && CounterX<=640 && CounterY<=boxPos && CounterY>=410; 
+	wire r_hit = CounterX>=0 && CounterX<=199 && CounterY<=(redBoxPos) && CounterY>=(410);
 	wire R4 = CounterX>=0 && CounterX<=199 && CounterY<=(position[4]+20) && CounterY>=(position[4]-20);
 	wire R3 = CounterX>=0 && CounterX<=199 && CounterY<=(position[3]+20) && CounterY>=(position[3]-20);
 	wire R2 = CounterX>=0 && CounterX<=199 && CounterY<=(position[2]+20) && CounterY>=(position[2]-20);
 	wire R1 = CounterX>=0 && CounterX<=199 && CounterY<=(position[1]+20) && CounterY>=(position[1]-20);
-	wire Red = (CounterX>=0 && CounterX<=199 && CounterY<=(position[0]+20) && CounterY>=(position[0]-20)) || R1 || R2 || R3 || R4 || box;
+	wire Red = (CounterX>=0 && CounterX<=199 && CounterY<=(position[0]+20) && CounterY>=(position[0]-20)) || R1 || R2 || R3 || R4 || box || r_hit;
 
 	wire G9 = CounterX>=220 && CounterX<=419 && CounterY<=(position[9]+20) && CounterY>=(position[9]-20);
 	wire G8 = CounterX>=220 && CounterX<=419 && CounterY<=(position[8]+20) && CounterY>=(position[8]-20);	
 	wire G7 = CounterX>=220 && CounterX<=419 && CounterY<=(position[7]+20) && CounterY>=(position[7]-20);
 	wire G6 = CounterX>=220 && CounterX<=419 && CounterY<=(position[6]+20) && CounterY>=(position[6]-20);
-	wire Green = (CounterX>=220 && CounterX<=419 && CounterY<=(position[5]+20) && CounterY>=(position[5]-20)) || G6 || G7 || G8 || G9 || box;
+	wire Green = (CounterX>=220 && CounterX<=419 && CounterY<=(position[5]+20) && CounterY>=(position[5]-20)) || G6 || G7 || G8 || G9 || box ||r_hit;
 
 	wire B14 = CounterX>=440 && CounterX<=639 && CounterY<=(position[14]+20) && CounterY>=(position[14]-20);
 	wire B13 = CounterX>=440 && CounterX<=639 && CounterY<=(position[13]+20) && CounterY>=(position[13]-20);
 	wire B12 = CounterX>=440 && CounterX<=639 && CounterY<=(position[12]+20) && CounterY>=(position[12]-20);
 	wire B11 = CounterX>=440 && CounterX<=639 && CounterY<=(position[11]+20) && CounterY>=(position[11]-20);
-	wire Blue = CounterX>=440 && CounterX<=639 && CounterY<=(position[10]+20) && CounterY>=(position[10]-20) || B11 || B12 || B13 || B14 || box;
+	wire Blue = CounterX>=440 && CounterX<=639 && CounterY<=(position[10]+20) && CounterY>=(position[10]-20) || B11 || B12 || B13 || B14 || box || r_hit;
 	
 	always @(posedge clk)
 	begin

@@ -7,7 +7,7 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	St_ce_bar, St_rp_bar, Mt_ce_bar, Mt_St_oe_bar, Mt_St_we_bar,
 	An0, An1, An2, An3, Ca, Cb, Cc, Cd, Ce, Cf, Cg, Dp,
 	LD0, LD1, LD2, LD3, LD4, LD5, LD6, LD7);
-	input ClkPort, Sw0, btnU, btnL, btnR, btnD, btnC, Sw0, Sw1;
+	input ClkPort, Sw0, Sw1, btnU, btnL, btnR, btnD, btnC;
 	output St_ce_bar, St_rp_bar, Mt_ce_bar, Mt_St_oe_bar, Mt_St_we_bar;
 	output vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b;
 	output An0, An1, An2, An3, Ca, Cb, Cc, Cd, Ce, Cf, Cg, Dp;
@@ -295,20 +295,15 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 					counter <= 0;
 					
 					for(i=0;i<3;i=i+1)
-					begin
-						scoreFlag[i]<=0;
-						scoreCounter[i]<=0;
-					end
+						begin
+							scoreFlag[i]<=0;
+							scoreCounter[i]<=0;
+						end
 					for (i = 0; i < 15; i = i+1)
 						begin
 							position[i] <= 0;
 							flag[i] <= 0;
 						end
-				end
-			else if (btnU)
-				begin
-					for (i = 0; i < 15; i = i+1)
-						position[i] <= position[i];
 				end
 			else
 				begin
@@ -323,7 +318,7 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 					PLAY:
 						begin
 							// when done displaying notes, go to DONE state
-							// use 240 to make sure all notes off of screen
+							// use 225 to make sure all notes off of screen
 							if (counter >= 225)
 								state <= DONE;
 							
@@ -335,26 +330,26 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 								for (i = 0; i < 5; i = i+1)
 									begin
 										if ((position[i] >= 430) && (position[i] <= 470))
-										begin
-											if(scoreFlag[0]==0)
 											begin
-												score <= score + 1;
-												scoreFlag[0]<=1;
-											end
-										end
-											
+												if(scoreFlag[0]==0)
+												begin
+													score <= score + 1;
+													scoreFlag[0]<=1;
+												end
+											end											
 									end
 								end
 							else
-							begin
-								redBoxPos <= 0;
-								scoreCounter[0]<=scoreCounter[0]+1;
-								if(scoreCounter[0]==10)
 								begin
-									scoreFlag[0]<=0;
-									scoreCounter[0]<=0;
+									redBoxPos <= 0;
+									scoreCounter[0]<=scoreCounter[0]+1;
+									if(scoreCounter[0]==10)
+										begin
+											scoreFlag[0]<=0;
+											scoreCounter[0]<=0;
+										end
 								end
-								end
+								
 							if(btnC)
 								begin
 									greenBoxPos <= 450;
@@ -362,30 +357,31 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 										begin
 											if ((position[i] >= 430) && (position[i] <= 470))
 												begin
-											if(scoreFlag[1]==0)
-											begin
-												score <= score + 1;
-												scoreFlag[1]<=1;
+													if(scoreFlag[1]==0)
+													begin
+														score <= score + 1;
+														scoreFlag[1]<=1;
+													end
 											end
-										end
 										end
 								end
 							else
-							begin
-								greenBoxPos <= 0;
-								scoreCounter[1]<=scoreCounter[1]+1;
-								if(scoreCounter[1]==10)
 								begin
-									scoreFlag[1]<=0;
-									scoreCounter[1]<=0;
-								end
-								end							
+									greenBoxPos <= 0;
+									scoreCounter[1]<=scoreCounter[1]+1;
+									if(scoreCounter[1]==10)
+										begin
+											scoreFlag[1]<=0;
+											scoreCounter[1]<=0;
+										end
+								end	
+								
 							if(btnR)
 								begin
 									blueBoxPos <= 450;
 									for (i = 10; i < 15; i = i+1)
 										begin
-											if ((position[i] >= 430) && (position[i] <= 470))
+											if ((position[i] >= 420) && (position[i] <= 440))
 												begin
 											if(scoreFlag[2]==0)
 											begin
@@ -397,13 +393,13 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 								end
 							else
 								begin
-								blueBoxPos <= 0;
-								scoreCounter[2]<=scoreCounter[2]+1;
-								if(scoreCounter[2]==10)
-								begin
-									scoreFlag[2]<=0;
-									scoreCounter[2]<=0;
-								end
+									blueBoxPos <= 0;
+									scoreCounter[2]<=scoreCounter[2]+1;
+									if(scoreCounter[2]==10)
+										begin
+											scoreFlag[2]<=0;
+											scoreCounter[2]<=0;
+										end
 								end
 							// for moving the blocks down the screen 
 							for (i = 0; i < 15; i = i+1)
@@ -477,7 +473,7 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 										end
 								end
 						end
-						DONE:
+					DONE:
 						begin
 							if (btnU)
 								state <= PLAY;
@@ -491,13 +487,7 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 					endcase
 				end
 		end
-	
-	
 
-	always@ (posedge sys_clk)
-	begin
-		
-	end
 	
 	always @(posedge DIV_CLK[1])
 	begin

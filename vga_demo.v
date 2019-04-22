@@ -272,7 +272,7 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	reg [8:0] blueBoxPos;
 	reg [8:0] boxPos;
 	reg [8:0] redTest;
-	reg [5:0] scoreCounter;
+	reg [5:0] scoreCounter[0:2];
 	reg tempFlag;
 	reg hitFlag[0:2];
 	reg [15:0] score;
@@ -293,10 +293,11 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 					state <= INITIAL;
 					posCount <= 0;
 					counter <= 0;
-					scoreCounter<=0;
+					
 					for(i=0;i<3;i=i+1)
 					begin
 						scoreFlag[i]<=0;
+						scoreCounter[i]<=0;
 					end
 					for (i = 0; i < 15; i = i+1)
 						begin
@@ -347,11 +348,11 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 							else
 							begin
 								redBoxPos <= 0;
-								scoreCounter<=scoreCounter+1;
-								if(scoreCounter==10)
+								scoreCounter[0]<=scoreCounter[0]+1;
+								if(scoreCounter[0]==10)
 								begin
 									scoreFlag[0]<=0;
-									scoreCounter<=0;
+									scoreCounter[0]<=0;
 								end
 								end
 							if(btnC)
@@ -360,24 +361,50 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 									for (i = 5; i < 10; i = i+1)
 										begin
 											if ((position[i] >= 430) && (position[i] <= 470))
+												begin
+											if(scoreFlag[1]==0)
+											begin
 												score <= score + 1;
+												scoreFlag[1]<=1;
+											end
+										end
 										end
 								end
 							else
+							begin
 								greenBoxPos <= 0;
-							
+								scoreCounter[1]<=scoreCounter[1]+1;
+								if(scoreCounter[1]==10)
+								begin
+									scoreFlag[1]<=0;
+									scoreCounter[1]<=0;
+								end
+								end							
 							if(btnR)
 								begin
 									blueBoxPos <= 450;
 									for (i = 10; i < 15; i = i+1)
 										begin
 											if ((position[i] >= 430) && (position[i] <= 470))
+												begin
+											if(scoreFlag[2]==0)
+											begin
 												score <= score + 1;
+												scoreFlag[2]<=1;
+											end
+										end
 										end
 								end
 							else
+								begin
 								blueBoxPos <= 0;
-							
+								scoreCounter[2]<=scoreCounter[2]+1;
+								if(scoreCounter[2]==10)
+								begin
+									scoreFlag[2]<=0;
+									scoreCounter[2]<=0;
+								end
+								end
 							// for moving the blocks down the screen 
 							for (i = 0; i < 15; i = i+1)
 								begin

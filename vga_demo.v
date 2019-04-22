@@ -49,7 +49,7 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	reg [9:0] position [0:14];
 	reg [2:0] notes [0:202];
 	reg flag [0:14];
-	reg scoreFlag [0:14];
+	reg scoreFlag [0:2];
 	initial begin
 	notes[0] = 3'b000;
 	notes[1] = 3'b001;
@@ -272,6 +272,7 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	reg [8:0] blueBoxPos;
 	reg [8:0] boxPos;
 	reg [8:0] redTest;
+	reg [5:0] scoreCounter;
 	reg tempFlag;
 	reg hitFlag[0:2];
 	reg [15:0] score;
@@ -292,6 +293,11 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 					state <= INITIAL;
 					posCount <= 0;
 					counter <= 0;
+					scoreCounter<=0;
+					for(i=0;i<3;i=i+1)
+					begin
+						scoreFlag[i]<=0;
+					end
 					for (i = 0; i < 15; i = i+1)
 						begin
 							position[i] <= 0;
@@ -323,12 +329,26 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 								for (i = 0; i < 5; i = i+1)
 									begin
 										if ((position[i] >= 430) && (position[i] <= 470))
-											score <= score + 1;
+										begin
+											if(scoreFlag[0]==0)
+											begin
+												score <= score + 1;
+												scoreFlag[0]<=1;
+											end
+										end
+											
 									end
 								end
 							else
+							begin
 								redBoxPos <= 0;
-						
+								scoreCounter<=scoreCounter+1;
+								if(scoreCounter==10)
+								begin
+									scoreFlag[0]<=0;
+									scoreCounter<=0;
+								end
+								end
 							if(btnC)
 								begin
 									greenBoxPos <= 450;
@@ -575,7 +595,7 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 			4'b1010: SSD_CATHODES = 7'b0001000 ; //10 or A
 			4'b1011: SSD_CATHODES = 7'b1100000 ; //b
 			4'b1100: SSD_CATHODES = 7'b0110001 ; //C
-			4'b1101: SSD_CATHODES = 7'b1000001 ; //d
+			4'b1101: SSD_CATHODES = 7'b1000010 ; //d
 			4'b1110: SSD_CATHODES = 7'b0110000 ; //E
 			4'b1111: SSD_CATHODES = 7'b0111000 ; //F 
 			default: SSD_CATHODES = 7'bXXXXXXX ; // default is not needed as we covered all cases

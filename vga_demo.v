@@ -49,7 +49,7 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	reg [9:0] position [0:14];
 	reg [2:0] notes [0:202];
 	reg flag [0:14];
-	
+	reg scoreFlag [0:14];
 	initial begin
 	notes[0] = 3'b000;
 	notes[1] = 3'b001;
@@ -530,8 +530,8 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	
 	assign SSD3 = score[15:12];
 	assign SSD2 = score[11:8];
-	assign SSD1 = score[4:7];
-	assign SSD0 = score[0:3];
+	assign SSD1 = score[7:4];
+	assign SSD0 = score[3:0];
 	
 	// need a scan clk for the seven segment display 
 	// 191Hz (50MHz / 2^18) works well
@@ -562,7 +562,6 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	always @ (SSD) 
 	begin : HEX_TO_SSD
 		case (SSD)		
-			4'b1111: SSD_CATHODES = 7'b1111111 ; //Nothing 
 			4'b0000: SSD_CATHODES = 7'b0000001 ; //0
 			4'b0001: SSD_CATHODES = 7'b1001111 ; //1
 			4'b0010: SSD_CATHODES = 7'b0010010 ; //2
@@ -574,6 +573,11 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 			4'b1000: SSD_CATHODES = 7'b0000000 ; //8
 			4'b1001: SSD_CATHODES = 7'b0000100 ; //9
 			4'b1010: SSD_CATHODES = 7'b0001000 ; //10 or A
+			4'b1011: SSD_CATHODES = 7'b1100000 ; //b
+			4'b1100: SSD_CATHODES = 7'b0110001 ; //C
+			4'b1101: SSD_CATHODES = 7'b1000001 ; //d
+			4'b1110: SSD_CATHODES = 7'b0110000 ; //E
+			4'b1111: SSD_CATHODES = 7'b0111000 ; //F 
 			default: SSD_CATHODES = 7'bXXXXXXX ; // default is not needed as we covered all cases
 		endcase
 	end

@@ -274,7 +274,7 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	reg [8:0] redTest;
 	reg tempFlag;
 	reg hitFlag[0:2];
-	reg [7:0] score;
+	reg [15:0] score;
 	wire R, G, B;
 	integer i;
 	
@@ -311,12 +311,49 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 							if (start == 1) 
 								state <= PLAY;
 								
+							score <= 0;
 						end
 					PLAY:
 						begin
-							if (btnU)
-								state <= INITIAL;
+							// check if button is pressed in order to increment score
+							if(btnL)
+								begin
+									redBoxPos <= 450;
+								
+								for (i = 0; i < 5; i = i+1)
+									begin
+										if ((position[i] >= 430) && (position[i] <= 470))
+											score <= score + 1;
+									end
+								end
+							else
+								redBoxPos <= 0;
+						
+							if(btnC)
+								begin
+									greenBoxPos <= 450;
+									for (i = 5; i < 10; i = i+1)
+										begin
+											if ((position[i] >= 430) && (position[i] <= 470))
+												score <= score + 1;
+										end
+								end
+							else
+								greenBoxPos <= 0;
 							
+							if(btnR)
+								begin
+									blueBoxPos <= 450;
+									for (i = 10; i < 15; i = i+1)
+										begin
+											if ((position[i] >= 430) && (position[i] <= 470))
+												score <= score + 1;
+										end
+								end
+							else
+								blueBoxPos <= 0;
+							
+							// for moving the blocks down the screen 
 							for (i = 0; i < 15; i = i+1)
 								begin
 									if (flag[i] == 1)
@@ -396,44 +433,7 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 
 	always@ (posedge sys_clk)
 	begin
-		if(btnL)
-			begin
-				redBoxPos <= 450;
-				
-				for (i = 0; i < 5; i = i+1)
-					begin
-						if ((position[i] >= 430) && (position[i] <= 470))
-							score <= score + 1;
-					end
-			end
-		else
-			redBoxPos <= 0;
-			
-		if(btnC)
-			begin
-				greenBoxPos <= 450;
-				
-				for (i = 5; i < 10; i = i+1)
-					begin
-						if ((position[i] >= 430) && (position[i] <= 470))
-							score <= score + 1;
-					end
-			end
-		else
-			greenBoxPos <= 0;
 		
-		if(btnR)
-			begin
-				blueBoxPos <= 450;
-				
-				for (i = 10; i < 15; i = i+1)
-					begin
-						if ((position[i] >= 430) && (position[i] <= 470))
-							score <= score + 1;
-					end
-			end
-		else
-			blueBoxPos <= 0;
 	end
 	
 	always @(posedge DIV_CLK[1])
@@ -522,16 +522,16 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 	reg 	[3:0]	SSD;
 	wire 	[3:0]	SSD0, SSD1, SSD2, SSD3;
 	wire 	[1:0] ssdscan_clk;
-	wire ones, tens, hundreds, thousands;
+	// wire ones, tens, hundreds, thousands;
 	
-	assign ones = score % 10;
-	assign tens = (score % 100 - ones)/10;
-	assign hundreds = (score % 1000 - tens*10 - ones)/100;
+	// assign ones = score % 10;
+	// assign tens = (score % 100 - ones)/10;
+	// assign hundreds = (score % 1000 - tens*10 - ones)/100;
 	
-	assign SSD3 = 4'b1111;
-	assign SSD2 = hundreds;
-	assign SSD1 = tens;
-	assign SSD0 = ones;
+	assign SSD3 = score[15:12];
+	assign SSD2 = score[11:8];
+	assign SSD1 = score[4:7];
+	assign SSD0 = score[0:3];
 	
 	// need a scan clk for the seven segment display 
 	// 191Hz (50MHz / 2^18) works well

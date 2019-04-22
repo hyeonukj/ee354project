@@ -321,6 +321,11 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 						end
 					PLAY:
 						begin
+							// when done displaying notes, go to DONE state
+							// use 240 to make sure all notes off of screen
+							if (counter >= 225)
+								state <= DONE;
+							
 							// check if button is pressed in order to increment score
 							if(btnL)
 								begin
@@ -443,6 +448,17 @@ module vga_demo(ClkPort, vga_h_sync, vga_v_sync, vga_r, vga_g, vga_b, Sw0, Sw1, 
 											else if ((flag[13] == 1)&& (flag[14] != 1))		// 011
 												flag[14] <= 1;
 										end
+								end
+						end
+						DONE:
+						begin
+							if (btnU)
+								state <= PLAY;
+							else 
+								begin								
+									score <= 0;
+									posCount <= 0;
+									counter <= 0;
 								end
 						end
 					endcase
